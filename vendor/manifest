@@ -1116,6 +1116,22 @@
 			"notests": true
 		},
 		{
+			"importpath": "gopkg.in/mgo.v2",
+			"repository": "https://gopkg.in/mgo.v2",
+			"vcs": "git",
+			"revision": "9856a29383ce1c59f308dd1cf0363a79b5bef6b5",
+			"branch": "v2",
+			"notests": true
+		},
+		{
+			"importpath": "gopkg.in/tomb.v2",
+			"repository": "https://gopkg.in/tomb.v2",
+			"vcs": "git",
+			"revision": "d5d1b5820637886def9eef33e03a27a9f166942c",
+			"branch": "v2",
+			"notests": true
+		},
+		{
 			"importpath": "gopkg.in/yaml.v2",
 			"repository": "https://gopkg.in/yaml.v2",
 			"vcs": "git",

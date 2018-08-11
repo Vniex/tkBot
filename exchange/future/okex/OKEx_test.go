@@ -2,13 +2,15 @@ package okex
 
 import (
 	"github.com/stretchr/testify/assert"
-	"net/http"
 	"testing"
 	. "tkBot/exchange"
 )
 
+
+
 var (
-	okex = NewOKEx(http.DefaultClient, "", "")
+	 //httpClient=Utils.NewHttpClient(3,"socks5://127.0.0.1:1080")
+	okex = NewOKEx(httpClient, "", "")
 )
 
 func TestOKEx_GetFutureDepth(t *testing.T) {

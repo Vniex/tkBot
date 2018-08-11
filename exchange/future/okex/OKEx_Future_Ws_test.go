@@ -2,16 +2,17 @@ package okex
 
 import (
 	"time"
-	"net/http"
 	"testing"
 	"log"
-	. "tkBot/exchange"
+	Exchange "tkBot/exchange"
+	Utils "tkBot/utils"
 )
 
-var okexFuture = NewOKEx(http.DefaultClient, "", "")
+var httpClient=Utils.NewHttpClient(3,"socks5://127.0.0.1:1080")
+var okexFuture = NewOKEx(httpClient, "", "")
 
 func TestOKEx_GetDepthWithWs(t *testing.T) {
-	okexFuture.GetDepthWithWs(BTC_USD, QUARTER_CONTRACT, func(depth *Depth) {
+	okexFuture.GetDepthWithWs(Exchange.BTC_USD,Exchange.QUARTER_CONTRACT, func(depth *Exchange.Depth) {
 		log.Print(depth)
 	})
 	time.Sleep(1 * time.Minute)
@@ -20,7 +21,7 @@ func TestOKEx_GetDepthWithWs(t *testing.T) {
 
 
 func TestOKEx_GetTickerWithWs(t *testing.T) {
-	okexFuture.GetTickerWithWs(BTC_USD, QUARTER_CONTRACT, func(ticker *Ticker) {
+	okexFuture.GetTickerWithWs(Exchange.BTC_USD, Exchange.QUARTER_CONTRACT, func(ticker *Exchange.Ticker) {
 		log.Print(ticker)
 	})
 	time.Sleep(1 * time.Minute)

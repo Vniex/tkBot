@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	Controllers "tkBot/server/controllers"
+	WebSocket "tkBot/server/websocket"
 
 )
 
@@ -36,6 +37,10 @@ func InitRouter() *gin.Engine {
 	router := gin.New()
 	router.Use(CorsMiddleware())
 	router.GET("/",Controllers.TestApi)
+
+	router.GET("/ws", func(c *gin.Context) {
+		WebSocket.WsHandler(c.Writer, c.Request)
+	})
 
 	return router
 
