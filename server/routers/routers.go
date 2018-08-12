@@ -38,8 +38,8 @@ func InitRouter() *gin.Engine {
 	router.Use(CorsMiddleware())
 	router.GET("/",Controllers.TestApi)
 
-	router.GET("/ws", func(c *gin.Context) {
-		WebSocket.WsHandler(c.Writer, c.Request)
+	router.GET("/robotws", func(c *gin.Context) {
+		WebSocket.WsHandlerServer(c.Writer, c.Request)
 	})
 
 	return router

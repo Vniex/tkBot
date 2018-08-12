@@ -4,20 +4,36 @@ import (
 	"encoding/json"
 	"log"
 )
+const(
+	 CmdType_HEARTBEAT = iota+1
+	 CmdType_KILL
 
-const (
-	MSG_ROBOT  = 1+iota
-	MSG_MARKET
-	
 )
 
-type Message struct {
-	MsgType int `json:"msg_type"`
-	Data  interface{} `json:"data"`
+
+type RobotMsg struct {
+	Cmd   int      `json:"cmd"`
+	Data  string `json:"data"`
 }
 
-func ParseMsg(message []byte) *Message {
-	var data Message
+
+func NewRobotMsg(cmd int,data string) *RobotMsg{
+	return &RobotMsg{cmd,data}
+}
+
+func (r *RobotMsg)ToBytes() ([]byte,error){
+	msg, err := json.Marshal(r)
+	if err != nil {
+		log.Printf("Fail to package robotMsg :%v", err)
+		return nil,err
+	}
+	return msg,nil
+}
+
+
+
+func ParseRobotMsg(message []byte) *RobotMsg {
+	var data RobotMsg
 	err := json.Unmarshal(message, &data)
 	if err != nil {
 		log.Println("Fail to parse message:%v", err)
@@ -26,9 +42,9 @@ func ParseMsg(message []byte) *Message {
 	return &data
 }
 
-func PackageMsg(msg_type int,data interface{}) []byte {
-	var req = Message{
-		MsgType:   msg_type,
+func PackageRobotMsg(cmd int,   data string) []byte {
+	var req = RobotMsg{
+		Cmd:   cmd,
 		Data:  data,
 	}
 
@@ -39,4 +55,3 @@ func PackageMsg(msg_type int,data interface{}) []byte {
 	}
 	return msg
 }
-
