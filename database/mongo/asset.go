@@ -36,7 +36,7 @@ func (t *Asset) Connect() error {
 		return err
 	}
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(Database).C(AssetCollectin)
+	c := session.DB(Database).C(AssetCollection)
 
 	t.session = session
 	t.collection = c
@@ -63,5 +63,5 @@ func (t *Asset) LoadCharts(exchange string, name string, period int) error {
 		log.Printf("chart:%v",t.asset[i])
 	}
 
-	return nil;
+	return nil
 }

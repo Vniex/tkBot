@@ -6,6 +6,20 @@ import (
 	"strings"
 )
 
+
+func Min(x, y int) int{
+	if x < y {
+		return x
+	}
+	return y
+}
+
+func Max(x, y int) int {
+	if x < y {
+		return y
+	}
+	return x
+}
 func ToFloat64(v interface{}) float64 {
 	if v == nil {
 		return 0.0
@@ -56,6 +70,25 @@ func AdjustFloat(input_num float64,precision int,floor bool) (float64,string) {
 	}
 
 	return adjusted,strconv.FormatFloat(adjusted, 'f', precision, 64)
+}
+func ToInt(v interface{}) int {
+	if v == nil {
+		return 0
+	}
+
+	switch v.(type) {
+	case string:
+		vStr := v.(string)
+		vInt, _ := strconv.Atoi(vStr)
+		return vInt
+	case int:
+		return v.(int)
+	case float64:
+		vF := v.(float64)
+		return int(vF)
+	default:
+		panic("to int error.")
+	}
 }
 
 

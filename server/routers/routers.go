@@ -36,7 +36,15 @@ func InitRouter() *gin.Engine {
 	//gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 	router.Use(CorsMiddleware())
-	router.GET("/",Controllers.TestApi)
+	v1 := router.Group("/api/v1/announcement")
+	{
+		v1.POST("/", Controllers.CreateAnnouncement)
+		v1.GET("/", Controllers.GetAnnouncements)
+		v1.GET("/:id", nil)
+		v1.PUT("/:id", nil)
+		v1.DELETE("/:id", nil)
+	}
+
 
 	router.GET("/robotws", func(c *gin.Context) {
 		WebSocket.WsHandlerServer(c.Writer, c.Request)
