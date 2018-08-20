@@ -59,9 +59,11 @@ func GetAnnouncements(c *gin.Context){
 		c.JSON(http.StatusOK,gin.H{
 			"success":false,"message":err.Error(),"data":ann_list,
 		})
+	}else{
+		c.JSON(http.StatusOK,gin.H{
+			"success":true,"message":"成功","data":ann_list,
+		})
 	}
-	c.JSON(http.StatusOK,gin.H{
-		"success":true,"message":"成功","data":ann_list,
-	})
+
 }
 

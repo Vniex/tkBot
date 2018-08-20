@@ -91,12 +91,11 @@ closed:
 }
 
 
-func (wsConn *WsConnection)Heartbeat(interval int,msg string) {
+func (wsConn *WsConnection)Heartbeat(interval int,msg *RobotMsg) {
 
-	heartbeatMsg:=NewRobotMsg(CmdType_HEARTBEAT,msg)
 	for {
 		time.Sleep(time.Duration(interval )* time.Second)
-		if err := wsConn.WsWrite(heartbeatMsg); err != nil {
+		if err := wsConn.WsWrite(msg); err != nil {
 			fmt.Println("heartbeat fail")
 			wsConn.WsClose()
 			break

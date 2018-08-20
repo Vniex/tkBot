@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-const MongoURL = "mongodb://192.168.8.104:27017"
+const MongoURL = "mongodb://root:123456@192.168.8.104:27017"
 //mongodb://myuser:mypass@localhost:40001,
 
 
@@ -14,6 +14,7 @@ const Database = "tkBot"
 const AssetCollection = "Asset"
 const ExchangeCollection = "Exchange"
 const AnnouncementCollection = "Announcement"
+const StrategyCollection="Strategy"
 
 const TradeRecordCollection = "TradeRecord"
 const BalancesCollection = "Balances"

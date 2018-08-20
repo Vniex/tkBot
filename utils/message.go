@@ -6,7 +6,8 @@ import (
 	"log"
 
 	Message "tkBot/server/websocket"
-	Websocket "github.com/gorilla/websocket"
+	WebSocket "github.com/gorilla/websocket"
+
 )
 
 func SendToWechat(SERVER_SCKEY,text,desp string) {
@@ -26,7 +27,7 @@ type RobotDetect struct {
 
 
 func NewRobotDetect(websocketServer string) *RobotDetect{
-	conn, _, err := Websocket.DefaultDialer.Dial(websocketServer, nil)
+	conn, _, err := WebSocket.DefaultDialer.Dial(websocketServer, nil)
 	if err != nil {
 		log.Printf("Fail to dial: %v", err)
 		return nil
@@ -36,8 +37,8 @@ func NewRobotDetect(websocketServer string) *RobotDetect{
 }
 
 
-func (r *RobotDetect) Start() {
-	go r.wsConn.Heartbeat(2,"heartbeat from client")
+func (r *RobotDetect) Start(interval int,msg *Message.RobotMsg) {
+	go r.wsConn.Heartbeat(interval,msg)
 	go r.wsConn.ProcLoop(func(msg *Message.RobotMsg) {
 		log.Printf("client receive %v \n",msg)
 	})

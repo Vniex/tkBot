@@ -187,6 +187,14 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/fatih/structs",
+			"repository": "https://github.com/fatih/structs",
+			"vcs": "git",
+			"revision": "ebf56d35bba727c68ac77f56f2fcf90b181851aa",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/gin-contrib/sse",
 			"repository": "https://github.com/gin-contrib/sse",
 			"vcs": "git",
@@ -207,6 +215,14 @@
 			"repository": "https://github.com/gin-gonic/gin",
 			"vcs": "git",
 			"revision": "220e8d34538f5dfdcc299dda79bf83cf52e633f6",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/goinggo/mapstructure",
+			"repository": "https://github.com/goinggo/mapstructure",
+			"vcs": "git",
+			"revision": "194205d9b4a98eff86d4e8d3c0dfe87dea59ef81",
 			"branch": "master",
 			"notests": true
 		},

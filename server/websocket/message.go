@@ -12,13 +12,14 @@ const(
 
 
 type RobotMsg struct {
+	RobotName string `json:"robot_name"`
 	Cmd   int      `json:"cmd"`
 	Data  string `json:"data"`
 }
 
 
-func NewRobotMsg(cmd int,data string) *RobotMsg{
-	return &RobotMsg{cmd,data}
+func NewRobotMsg(robot_name string,cmd int,data string) *RobotMsg{
+	return &RobotMsg{robot_name,cmd,data}
 }
 
 func (r *RobotMsg)ToBytes() ([]byte,error){
@@ -42,8 +43,9 @@ func ParseRobotMsg(message []byte) *RobotMsg {
 	return &data
 }
 
-func PackageRobotMsg(cmd int,   data string) []byte {
+func PackageRobotMsg(robot_name string,cmd int,   data string) []byte {
 	var req = RobotMsg{
+		RobotName:robot_name,
 		Cmd:   cmd,
 		Data:  data,
 	}

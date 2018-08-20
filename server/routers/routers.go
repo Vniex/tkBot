@@ -36,19 +36,51 @@ func InitRouter() *gin.Engine {
 	//gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 	router.Use(CorsMiddleware())
-	v1 := router.Group("/api/v1/announcement")
+	v1 := router.Group("/api/v1")
 	{
-		v1.POST("/", Controllers.CreateAnnouncement)
-		v1.GET("/", Controllers.GetAnnouncements)
-		v1.GET("/:id", nil)
-		v1.PUT("/:id", nil)
-		v1.DELETE("/:id", nil)
+		announcement:=v1.Group("/announcement")
+		{
+			announcement.POST("/", Controllers.CreateAnnouncement)
+			announcement.GET("/", Controllers.GetAnnouncements)
+			announcement.GET("/:id", nil)
+			announcement.PUT("/:id", nil)
+			announcement.DELETE("/:id", nil)
+		}
+
+		robot:=v1.Group("/robot")
+		{
+
+			robot.POST("/", Controllers.CreateRobot)
+			robot.GET("/", Controllers.GetRobots)
+			robot.GET("/:id", nil)
+			robot.PUT("/:id", nil)
+			robot.DELETE("/:id", nil)
+
+		}
+
+		strategy:=v1.Group("/strategy")
+		{
+
+			strategy.POST("/", Controllers.CreateStrategy)
+			strategy.GET("/", Controllers.GetStrategies)
+			strategy.GET("/:id", nil)
+			strategy.PUT("/:id", nil)
+			strategy.DELETE("/:id", nil)
+
+		}
+
+		ws:=v1.Group("/ws")
+		{
+			ws.GET("/robot", func(c *gin.Context) {
+				WebSocket.WsHandlerServer(c.Writer, c.Request)
+			})
+
+		}
+
+
 	}
 
 
-	router.GET("/robotws", func(c *gin.Context) {
-		WebSocket.WsHandlerServer(c.Writer, c.Request)
-	})
 
 	return router
 
