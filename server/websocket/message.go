@@ -5,24 +5,28 @@ import (
 	"log"
 )
 const(
-	 CmdType_HEARTBEAT = iota+1
-	 CmdType_KILL
+	CmdType_HeartBeat = iota
+	CmdType_Kill
+	CmdType_Start
+	CmdType_Register
+	CmdType_PushData
+	CmdType_Log
 
 )
 
 
-type RobotMsg struct {
-	RobotName string `json:"robot_name"`
+type RobotHubMsg struct {
+	RobotHubName string `json:"robot_hub_name"`
 	Cmd   int      `json:"cmd"`
 	Data  string `json:"data"`
 }
 
 
-func NewRobotMsg(robot_name string,cmd int,data string) *RobotMsg{
-	return &RobotMsg{robot_name,cmd,data}
+func NewRobotMsg(robot_name string,cmd int,data string) *RobotHubMsg{
+	return &RobotHubMsg{robot_name,cmd,data}
 }
 
-func (r *RobotMsg)ToBytes() ([]byte,error){
+func (r *RobotHubMsg)ToBytes() ([]byte,error){
 	msg, err := json.Marshal(r)
 	if err != nil {
 		log.Printf("Fail to package robotMsg :%v", err)
@@ -33,8 +37,8 @@ func (r *RobotMsg)ToBytes() ([]byte,error){
 
 
 
-func ParseRobotMsg(message []byte) *RobotMsg {
-	var data RobotMsg
+func ParseRobotMsg(message []byte) *RobotHubMsg {
+	var data RobotHubMsg
 	err := json.Unmarshal(message, &data)
 	if err != nil {
 		log.Println("Fail to parse message:%v", err)
@@ -44,8 +48,8 @@ func ParseRobotMsg(message []byte) *RobotMsg {
 }
 
 func PackageRobotMsg(robot_name string,cmd int,   data string) []byte {
-	var req = RobotMsg{
-		RobotName:robot_name,
+	var req = RobotHubMsg{
+		RobotHubName:robot_name,
 		Cmd:   cmd,
 		Data:  data,
 	}

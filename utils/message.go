@@ -33,13 +33,13 @@ func NewRobotDetect(websocketServer string) *RobotDetect{
 		return nil
 	}
 
-	return &RobotDetect{websocketServer,Message.NewWsConnection(conn)}
+	return &RobotDetect{websocketServer,Message.NewWsConnection("",conn)}
 }
 
 
-func (r *RobotDetect) Start(interval int,msg *Message.RobotMsg) {
+func (r *RobotDetect) Start(interval int,msg *Message.RobotHubMsg) {
 	go r.wsConn.Heartbeat(interval,msg)
-	go r.wsConn.ProcLoop(func(msg *Message.RobotMsg) {
+	go r.wsConn.ProcLoop(func(msg *Message.RobotHubMsg) {
 		log.Printf("client receive %v \n",msg)
 	})
 	go r.wsConn.WsReadLoop()

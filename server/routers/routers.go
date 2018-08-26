@@ -6,6 +6,7 @@ import (
 
 	Controllers "tkBot/server/controllers"
 	WebSocket "tkBot/server/websocket"
+	Config "tkBot/config"
 
 )
 
@@ -33,7 +34,10 @@ func CorsMiddleware() gin.HandlerFunc {
 
 
 func InitRouter() *gin.Engine {
-	//gin.SetMode(gin.ReleaseMode)
+	if Config.ProductionEnv{
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	router := gin.New()
 	router.Use(CorsMiddleware())
 	v1 := router.Group("/api/v1")
@@ -53,15 +57,15 @@ func InitRouter() *gin.Engine {
 			robot.POST("/", Controllers.CreateRobot)
 			robot.GET("/", Controllers.GetRobots)
 			robot.GET("/:id", nil)
-			robot.PUT("/:id", nil)
-			robot.DELETE("/:id", nil)
+			robot.PUT("/", Controllers.StopRobot)
+			robot.DELETE("/", Controllers.DeleteRobot)
 
 		}
 
 		strategy:=v1.Group("/strategy")
 		{
 
-			strategy.POST("/", Controllers.CreateStrategy)
+			strategy.POST("/", nil)
 			strategy.GET("/", Controllers.GetStrategies)
 			strategy.GET("/:id", nil)
 			strategy.PUT("/:id", nil)

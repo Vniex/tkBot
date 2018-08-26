@@ -5,6 +5,8 @@ import (
 	"log"
 )
 
+var announcementDB *AnnouncementDB
+
 type Announcement struct {
 	Id int `bson:"id" json:"id"`
 	Title string `bson:"title" json:"title"`
@@ -41,11 +43,14 @@ type AnnouncementDB struct {
 	Collection string
 
 }
-func NewAnnouncementDB() *AnnouncementDB{
-	return &AnnouncementDB{
-		Database,
-		AnnouncementCollection,
+func GetAnnouncementDB() *AnnouncementDB{
+	if announcementDB==nil{
+		announcementDB=&AnnouncementDB{
+			Database,
+			AnnouncementCollection,
+		}
 	}
+	return announcementDB
 }
 
 func (a *AnnouncementDB)Insert(ann *Announcement) error{
@@ -95,7 +100,11 @@ func (a *AnnouncementDB) FindOneById(ann_id int) (*Announcement,error) {
 	return result,nil
 }
 
-func (a *AnnouncementDB) FindAnnsByExchangeId(exchange_id int)([]*Announcement,error){
+
+
+
+
+func (a *AnnouncementDB) FindAnns(exchange_id int ,ann_id int,limit int)([]*Announcement,error){
 	var result []*Announcement
 	session_clone,err:=GetSessionClone()
 	if err != nil {
@@ -103,23 +112,13 @@ func (a *AnnouncementDB) FindAnnsByExchangeId(exchange_id int)([]*Announcement,e
 		return nil,err
 	}
 	defer session_clone.Clone()
-	err = session_clone.DB(a.Database).C(a.Collection).Find(bson.M{"exchange_id":exchange_id}).Sort("-posted_at").All(&result)
-	if err != nil {
-		return nil,err
-	}
+	if exchange_id==-1{ //所有announcement
+		err = session_clone.DB(a.Database).C(a.Collection).Find(bson.M{"id":bson.M{"$lt": ann_id}}).Sort("-id").Limit(limit).All(&result)
 
-	return result,nil
-}
+	}else{
+		err = session_clone.DB(a.Database).C(a.Collection).Find(bson.M{"exchange_id":exchange_id,"id":bson.M{"$lt": ann_id}}).Sort("-id").Limit(limit).All(&result)
 
-func (a *AnnouncementDB) FindAnns(limit int)([]*Announcement,error){
-	var result []*Announcement
-	session_clone,err:=GetSessionClone()
-	if err != nil {
-		log.Println(err)
-		return nil,err
 	}
-	defer session_clone.Clone()
-	err = session_clone.DB(a.Database).C(a.Collection).Find(nil).Sort("-posted_at").Limit(limit).All(&result)
 	if err != nil {
 		return nil,err
 	}

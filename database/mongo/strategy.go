@@ -1,11 +1,15 @@
 package mongo
 
-import "log"
+import (
+	"log"
+	"gopkg.in/mgo.v2/bson"
+)
+
+var strategyDB *StrategyDB
 
 type Strategy struct {
-	Id int `bson:"id" json:"id"`
+	Id bson.ObjectId `bson:"_id" json:"id"`
 	StrategyName string `bson:"strategy_name" json:"strategy_name"`
-	Desp string `bson:"desp"  json:"desp"`
 	Para map[string]interface{} `bson:"para" json:"para"`
 }
 
@@ -16,11 +20,14 @@ type StrategyDB struct {
 	Collection string
 
 }
-func NewStrategyDB() *StrategyDB{
-	return &StrategyDB{
-		Database,
-		StrategyCollection,
+func GetStrategyDB() *StrategyDB{
+	if strategyDB==nil{
+		strategyDB=&StrategyDB{
+			Database,
+			StrategyCollection,
+		}
 	}
+	return strategyDB
 }
 
 func (db *StrategyDB)Insert(s *Strategy) error{

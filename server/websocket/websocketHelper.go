@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"fmt"
 	"errors"
+	"log"
 )
 
 
@@ -20,20 +21,22 @@ var wsUpgrader = websocket.Upgrader{
 
 // 客户端连接
 type WsConnection struct {
+	clientName string
 	wsSocket *websocket.Conn // 底层websocket
-	inChan chan *RobotMsg	// 读队列
-	outChan chan *RobotMsg // 写队列
+	inChan chan *RobotHubMsg	// 读队列
+	outChan chan *RobotHubMsg // 写队列
 
 	mutex sync.Mutex	// 避免重复关闭管道
 	isClosed bool
 	closeChan chan byte  // 关闭通知
 }
 
-func NewWsConnection (conn *websocket.Conn) *WsConnection{
+func NewWsConnection (name string,conn *websocket.Conn) *WsConnection{
 	return &WsConnection{
+		clientName:name,
 		wsSocket: conn,
-		inChan: make(chan *RobotMsg, 1000),
-		outChan: make(chan *RobotMsg, 1000),
+		inChan: make(chan *RobotHubMsg, 1000),
+		outChan: make(chan *RobotHubMsg, 1000),
 		closeChan: make(chan byte),
 		isClosed: false,
 	}
@@ -91,7 +94,7 @@ closed:
 }
 
 
-func (wsConn *WsConnection)Heartbeat(interval int,msg *RobotMsg) {
+func (wsConn *WsConnection)Heartbeat(interval int,msg *RobotHubMsg) {
 
 	for {
 		time.Sleep(time.Duration(interval )* time.Second)
@@ -103,7 +106,7 @@ func (wsConn *WsConnection)Heartbeat(interval int,msg *RobotMsg) {
 	}
 }
 
-func (wsConn *WsConnection)ProcLoop(procHandler func(msg *RobotMsg) ) {
+func (wsConn *WsConnection)ProcLoop(procHandler func(msg *RobotHubMsg) ) {
 
 
 	// 这是一个同步处理模型（只是一个例子），如果希望并行处理可以每个请求一个gorutine，注意控制并发goroutine的数量!!!
@@ -123,7 +126,7 @@ func (wsConn *WsConnection)ProcLoop(procHandler func(msg *RobotMsg) ) {
 }
 
 
-func (wsConn *WsConnection)WsWrite(msg *RobotMsg) error {
+func (wsConn *WsConnection)WsWrite(msg *RobotHubMsg) error {
 	select {
 	case wsConn.outChan <- msg:
 	case <- wsConn.closeChan:
@@ -132,7 +135,7 @@ func (wsConn *WsConnection)WsWrite(msg *RobotMsg) error {
 	return nil
 }
 
-func (wsConn *WsConnection)WsRead() (*RobotMsg, error) {
+func (wsConn *WsConnection)WsRead() (*RobotHubMsg, error) {
 	select {
 	case msg := <- wsConn.inChan:
 		return msg, nil
@@ -142,8 +145,9 @@ func (wsConn *WsConnection)WsRead() (*RobotMsg, error) {
 }
 
 func (wsConn *WsConnection)WsClose() {
+	log.Println("close conn")
 	wsConn.wsSocket.Close()
-
+	delete(HubWsConn, wsConn.clientName)
 	wsConn.mutex.Lock()
 	defer wsConn.mutex.Unlock()
 	if !wsConn.isClosed {

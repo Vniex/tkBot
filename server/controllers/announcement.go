@@ -4,13 +4,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 
-	DB "tkBot/database/mongo"
+	Mongo "tkBot/database/mongo"
 	Utils "tkBot/utils"
 )
 
 func CreateAnnouncement(c *gin.Context){
 	var(
-		ann *DB.Announcement
+		ann *Mongo.Announcement
 		err error
 	)
 	err=c.BindJSON(&ann)
@@ -20,8 +20,8 @@ func CreateAnnouncement(c *gin.Context){
 			"success":false,"message":err.Error(),
 		})
 	}else {
-		annDB := DB.NewAnnouncementDB()
-		err = annDB.Insert(ann)
+
+		err = Mongo.GetAnnouncementDB().Insert(ann)
 
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{
@@ -40,20 +40,18 @@ func CreateAnnouncement(c *gin.Context){
 
 func GetAnnouncements(c *gin.Context){
 	var(
-		ann_list []*DB.Announcement
+		ann_list []*Mongo.Announcement
 		err error
 	)
 	exchange_id := Utils.ToInt(c.DefaultQuery("exchange_id","-1"))
-	limit:=Utils.ToInt(c.DefaultQuery("limit","300"))
-	annDB:=DB.NewAnnouncementDB()
-	if exchange_id==-1{ // for all exchange
-		ann_list,err=annDB.FindAnns(limit)
+	limit:=Utils.ToInt(c.DefaultQuery("limit","20"))
+	last_id:=Utils.ToInt(c.DefaultQuery("last_id","999999999999"))
 
-	}else{
-		ann_list,err=annDB.FindAnnsByExchangeId(exchange_id)
-	}
+	ann_list,err=Mongo.GetAnnouncementDB().FindAnns(exchange_id,last_id,limit)
+
+
 	if ann_list==nil{
-		ann_list=make([]*DB.Announcement,0)
+		ann_list=make([]*Mongo.Announcement,0)
 	}
 	if err!=nil{
 		c.JSON(http.StatusOK,gin.H{

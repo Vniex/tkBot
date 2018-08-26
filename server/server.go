@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	Global "tkBot/config"
+	Config "tkBot/config"
 	Routers "tkBot/server/routers"
+	"tkBot/server/Global"
 )
 
 type HttpServer struct {
@@ -17,10 +18,13 @@ type HttpServer struct {
 
 
 
+
+
 func (h *HttpServer)Start(){
+	Global.InitGlobalVar()
 	router:=Routers.InitRouter()
 	h.server = &http.Server{
-		Addr:           ":"+Global.ServerPort,
+		Addr:           ":"+Config.ServerPort,
 		Handler:        router,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,

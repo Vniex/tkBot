@@ -3,8 +3,11 @@ package mongo
 import "testing"
 
 func TestAnnouncementDB_FindAnns(t *testing.T) {
-	db:=NewAnnouncementDB()
-	ann_list,err:=db.FindAnns(10)
+	db:=GetAnnouncementDB()
+	ann_list,err:=db.FindAnns(-1,16500,10)
 	t.Log(err)
-	t.Log(ann_list)
+	for _,ann:=range ann_list{
+		t.Log(ann.Id)
+	}
+
 }

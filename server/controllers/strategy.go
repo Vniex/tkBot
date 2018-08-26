@@ -4,12 +4,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 
-	DB "tkBot/database/mongo"
+	Mongo "tkBot/database/mongo"
 )
 
 func CreateStrategy(c *gin.Context){
 	var(
-		strategy *DB.Strategy
+		strategy *Mongo.Strategy
 		err error
 	)
 	err=c.BindJSON(&strategy)
@@ -19,8 +19,7 @@ func CreateStrategy(c *gin.Context){
 			"success":false,"message":err.Error(),
 		})
 	}else {
-		strategyDB := DB.NewStrategyDB()
-		err = strategyDB.Insert(strategy)
+		err = Mongo.GetStrategyDB().Insert(strategy)
 
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{
@@ -38,16 +37,13 @@ func CreateStrategy(c *gin.Context){
 
 func GetStrategies(c *gin.Context){
 	var(
-		strategies []*DB.Strategy
+		strategies []*Mongo.Strategy
 		err error
 	)
 
-
-
-		strategyDB := DB.NewStrategyDB()
-		strategies,err = strategyDB.FindStrategies()
+		strategies,err =Mongo.GetStrategyDB().FindStrategies()
 		if strategies ==nil{
-			strategies=make([]*DB.Strategy,0)
+			strategies=make([]*Mongo.Strategy,0)
 		}
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{

@@ -3,10 +3,11 @@ package mongo
 import (
 	"gopkg.in/mgo.v2"
 	"log"
+	Config "tkBot/config"
 )
 
-const MongoURL = "mongodb://root:123456@192.168.8.104:27017"
-//mongodb://myuser:mypass@localhost:40001,
+const MongoURL = "mongodb://"+Config.MongoUser+":"+Config.MongoPwd+"@"+Config.MongoIP+":"+Config.MongoPort
+
 
 
 const Database = "tkBot"
