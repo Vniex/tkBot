@@ -1,0 +1,62 @@
+//protoc -I ./  pb/announcement.proto --go_out=plugins=grpc:./
+
+syntax = "proto3";	// 指定语法格式，注意 proto3 不再支持 proto2 的 required 和 optional
+package pb;		// 指定生成的 user.pb.go 的包名，防止命名冲突
+
+
+
+// service 定义开放调用的服务，
+service AnnouncementService {
+
+    rpc GetAnnouncementList (GetAnnouncementListRequest) returns (GetAnnouncementListResponse) {};
+    rpc CreateAnnouncement(CreateAnnouncementRequest) returns (CreateAnnouncementResponse){};
+}
+
+
+// message 对应生成代码的 struct
+// 定义客户端请求的数据格式
+message GetAnnouncementListRequest {
+	// [修饰符] 类型 字段名 = 标识符;
+	int32 exchange_id = 1;
+    int32 limit=2;
+    int64 last_time=3;
+
+}
+
+
+message AnnouncementResponse {
+    int32 id = 1;
+    string title = 2;
+    string link = 3;
+    string logo = 4;
+    int64 posted_at =5;
+}
+
+message GetAnnouncementListResponse{
+    int32 error_code=1;
+    string error_message=2;
+    repeated  AnnouncementResponse data = 3;
+}
+
+message CreateAnnouncementRequest {
+    // [修饰符] 类型 字段名 = 标识符;
+    int32 id=1;
+    string title=2;
+    string abstract=3;
+    string link=4;
+    int32 exchange_id = 5;
+    string logo=6;
+    string exchange_name=7;
+    string exchange_alias=8;
+    int64 posted_at=9;
+    string lang_type=10;
+    string source =11;
+
+}
+
+// 定义服务端响应的数据格
+message CreateAnnouncementResponse {
+    int32 error_code = 1;
+    string error_message=2;
+
+}

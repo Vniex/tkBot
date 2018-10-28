@@ -6,9 +6,13 @@ import (
 
 	Mongo "tkBot/database/mongo"
 	Utils "tkBot/utils"
+	Global "tkBot/global"
+	log "github.com/sirupsen/logrus"
+
 )
 
 func CreateAnnouncement(c *gin.Context){
+
 	var(
 		ann *Mongo.Announcement
 		err error
@@ -16,21 +20,23 @@ func CreateAnnouncement(c *gin.Context){
 	err=c.BindJSON(&ann)
 	//log.Println("receive ann:",ann)
 	if err!=nil{
+		log.Error(err)
 		c.JSON(http.StatusOK,gin.H{
-			"success":false,"message":err.Error(),
+			"code":Global.ERROR_PARAMETER,"message":err.Error(),"data":nil,
 		})
 	}else {
 
 		err = Mongo.GetAnnouncementDB().Insert(ann)
 
 		if err != nil {
+			log.Error(err)
 			c.JSON(http.StatusOK, gin.H{
-				"success": false, "message": err.Error(),
+				"code": Global.ERROR_INTERNAL, "message": err.Error(),"data":nil,
 			})
 
 		}else{
 			c.JSON(http.StatusOK, gin.H{
-				"success": true, "message": "成功",
+				"code": Global.SUCCESS, "message": "成功","data":nil,
 			})
 		}
 	}
@@ -39,13 +45,14 @@ func CreateAnnouncement(c *gin.Context){
 }
 
 func GetAnnouncements(c *gin.Context){
+
 	var(
 		ann_list []*Mongo.Announcement
 		err error
 	)
 	exchange_id := Utils.ToInt(c.DefaultQuery("exchange_id","-1"))
 	limit:=Utils.ToInt(c.DefaultQuery("limit","20"))
-	last_id:=Utils.ToInt(c.DefaultQuery("last_id","999999999999"))
+	last_id:=Utils.ToInt(c.DefaultQuery("last_timestamp","999999999999"))
 
 	ann_list,err=Mongo.GetAnnouncementDB().FindAnns(exchange_id,last_id,limit)
 

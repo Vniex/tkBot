@@ -2,7 +2,7 @@ package websocket
 
 import (
 	"encoding/json"
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 const(
 	CmdType_HeartBeat = iota
@@ -29,7 +29,7 @@ func NewRobotMsg(robot_name string,cmd int,data string) *RobotHubMsg{
 func (r *RobotHubMsg)ToBytes() ([]byte,error){
 	msg, err := json.Marshal(r)
 	if err != nil {
-		log.Printf("Fail to package robotMsg :%v", err)
+		log.Error("Fail to package robotMsg :%v", err)
 		return nil,err
 	}
 	return msg,nil
@@ -41,7 +41,7 @@ func ParseRobotMsg(message []byte) *RobotHubMsg {
 	var data RobotHubMsg
 	err := json.Unmarshal(message, &data)
 	if err != nil {
-		log.Println("Fail to parse message:%v", err)
+		log.Error("Fail to parse message:%v", err)
 		return nil
 	}
 	return &data
@@ -56,7 +56,7 @@ func PackageRobotMsg(robot_name string,cmd int,   data string) []byte {
 
 	msg, err := json.Marshal(req)
 	if err != nil {
-		log.Println("Fail to packageResponseMsg:%v", err)
+		log.Error("Fail to packageResponseMsg:%v", err)
 		return nil
 	}
 	return msg

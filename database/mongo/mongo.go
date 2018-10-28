@@ -16,6 +16,10 @@ const AssetCollection = "Asset"
 const ExchangeCollection = "Exchange"
 const AnnouncementCollection = "Announcement"
 const StrategyCollection="Strategy"
+const UserCollection="User"
+const LogInfoCollection="LogInfo"
+const OrderCollection="Order"
+
 
 const TradeRecordCollection = "TradeRecord"
 const BalancesCollection = "Balances"

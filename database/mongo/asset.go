@@ -1,67 +1,77 @@
 package mongo
 
 import (
-	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"fmt"
-	"errors"
-	"log"
+
+	log "github.com/sirupsen/logrus"
 )
 
+
+var assetDB *AssetDB
+
 type Asset struct {
-	session *mgo.Session
-	collection *mgo.Collection
+	RobotName string `bson:"robot_name" json:"robot_name"`
+	NetAsset float64 `bson:"net_asset" json:"net_asset"`
+	TimeStamp int `bson:"time_stamp" json:"time_stamp"`
 
-	asset []AssetItem
 }
 
-type AssetItem struct {
-	Name			string `json:"name"`
-	Date            int64   `json:"date"`
-	Hm              string  `json:"hm"`
-	High            float64 `json:"high"`
-	Low             float64 `json:"low"`
-	Open            float64 `json:"open"`
-	Close           float64 `json:"close"`
-	Volume          float64 `json:"volume"`
-	QuoteVolume     float64 `json:"quoteVolume"`
-	WeightedAverage float64 `json:"weightedAverage"`
-	Exchange		string `json:"exchange"`
+
+func NewAsset(robot_name string ,net_asset float64,timestamp int)*Asset{
+
+	return &Asset{
+		robot_name,
+		net_asset,
+		timestamp,
+	}
 }
 
-func (t *Asset) Connect() error {
-	session, err := mgo.Dial(MongoURL)
+type AssetDB struct {
+	Database string
+	Collection string
+
+}
+
+func GetAssetDB() *AssetDB{
+	if assetDB==nil{
+		assetDB=&AssetDB{
+			Database,
+			AssetCollection,
+		}
+	}
+	return assetDB
+}
+
+func (db *AssetDB)Insert(asset *Asset) error{
+	session_clone,err:=GetSessionClone()
 	if err != nil {
-		fmt.Println("Connect to redis error", err)
+		log.Error(err)
 		return err
 	}
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(Database).C(AssetCollection)
-
-	t.session = session
-	t.collection = c
-
+	defer session_clone.Clone()
+	err=session_clone.DB(db.Database).C(db.Collection).Insert(asset)
+	if err!=nil{
+		log.Error(err)
+		return err
+	}
 	return nil
 }
 
-func (t *Asset) Close() {
-	if t.session != nil {
-		t.session.Close()
+
+func (db *AssetDB)FindAssetsInTimeByRobot(robot_name string,timestamp int) ([]*Asset,error) {
+	var result []*Asset
+	session_clone,err:=GetSessionClone()
+	if err != nil {
+
+		log.Error(err)
+		return nil,err
 	}
-}
-
-func (t *Asset) LoadCharts(exchange string, name string, period int) error {
-
-	if t.collection == nil {
-		return errors.New("Mongo is not connected")
-	}
-
-	t.asset = []AssetItem{}
-	t.collection.Find(bson.M{"exchange": exchange, "name": name}).All(&t.asset);
-
-	for i := 0; i < len(t.asset); i++{
-		log.Printf("chart:%v",t.asset[i])
+	defer session_clone.Clone()
+	err = session_clone.DB(db.Database).C(db.Collection).Find(bson.M{"robot_name":robot_name,"time_stamp": bson.M{"$gte": timestamp}}).Sort("time_stamp").All(&result)
+	if err != nil {
+		log.Error(err)
+		return nil,err
 	}
 
-	return nil
+	return result,nil
 }

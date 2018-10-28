@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	Mongo "tkBot/database/mongo"
+	log "github.com/sirupsen/logrus"
 )
 
 func CreateStrategy(c *gin.Context){
@@ -15,6 +16,7 @@ func CreateStrategy(c *gin.Context){
 	err=c.BindJSON(&strategy)
 	//log.Println("receive ann:",ann)
 	if err!=nil{
+		log.Error(err)
 		c.JSON(http.StatusOK,gin.H{
 			"success":false,"message":err.Error(),
 		})
@@ -22,6 +24,7 @@ func CreateStrategy(c *gin.Context){
 		err = Mongo.GetStrategyDB().Insert(strategy)
 
 		if err != nil {
+			log.Error(err)
 			c.JSON(http.StatusOK, gin.H{
 				"success": false, "message": err.Error(),
 			})
@@ -46,6 +49,7 @@ func GetStrategies(c *gin.Context){
 			strategies=make([]*Mongo.Strategy,0)
 		}
 		if err != nil {
+			log.Error(err)
 			c.JSON(http.StatusOK, gin.H{
 				"success": false, "message": err.Error(),"data":strategies,
 			})

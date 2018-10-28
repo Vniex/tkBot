@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"fmt"
 	"errors"
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 
@@ -145,7 +145,7 @@ func (wsConn *WsConnection)WsRead() (*RobotHubMsg, error) {
 }
 
 func (wsConn *WsConnection)WsClose() {
-	log.Println("close conn")
+	log.Error("close conn")
 	wsConn.wsSocket.Close()
 	delete(HubWsConn, wsConn.clientName)
 	wsConn.mutex.Lock()

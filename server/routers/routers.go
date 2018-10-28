@@ -2,34 +2,16 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
-	"net/http"
-
 	Controllers "tkBot/server/controllers"
 	WebSocket "tkBot/server/websocket"
 	Config "tkBot/config"
+	Middleware "tkBot/server/middleware"
 
 )
 
-func CorsMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		method := c.Request.Method
 
-		isAccess:=true
-		if isAccess {
-			// 核心处理方式
-			c.Header("Access-Control-Allow-Origin", "*")
-			c.Header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
-			c.Header("Access-Control-Allow-Methods", "GET, OPTIONS, POST, PUT, DELETE")
-			c.Set("content-type", "application/json")
-		}
-		//放行所有OPTIONS方法
-		if method == "OPTIONS" {
-			c.JSON(http.StatusOK, "Options Request!")
-		}
 
-		c.Next()
-	}
-}
+
 
 
 
@@ -39,19 +21,30 @@ func InitRouter() *gin.Engine {
 	}
 
 	router := gin.New()
-	router.Use(CorsMiddleware())
+	router.Use(Middleware.CorsMiddleware())
 	v1 := router.Group("/api/v1")
 	{
+		user:=v1.Group("/user")
+		{
+			user.GET("/",nil)
+			user.POST("/register",Controllers.Register)
+			user.POST("/login",Controllers.Login)
+
+		}
+
+		// out for public
+		v1.GET("/announcement/", Controllers.GetAnnouncements)
 		announcement:=v1.Group("/announcement")
+		announcement.Use(Middleware.AUTH())
 		{
 			announcement.POST("/", Controllers.CreateAnnouncement)
-			announcement.GET("/", Controllers.GetAnnouncements)
 			announcement.GET("/:id", nil)
 			announcement.PUT("/:id", nil)
 			announcement.DELETE("/:id", nil)
 		}
 
 		robot:=v1.Group("/robot")
+		robot.Use(Middleware.AUTH())
 		{
 
 			robot.POST("/", Controllers.CreateRobot)
@@ -63,6 +56,7 @@ func InitRouter() *gin.Engine {
 		}
 
 		strategy:=v1.Group("/strategy")
+		strategy.Use(Middleware.AUTH())
 		{
 
 			strategy.POST("/", nil)
@@ -70,6 +64,37 @@ func InitRouter() *gin.Engine {
 			strategy.GET("/:id", nil)
 			strategy.PUT("/:id", nil)
 			strategy.DELETE("/:id", nil)
+
+		}
+
+		asset:=v1.Group("/asset")
+		asset.Use(Middleware.AUTH())
+		{
+			asset.GET("/",Controllers.GetAsset)
+			asset.POST("/",Controllers.CreatAsset)
+		}
+
+		order:=v1.Group("/order")
+		order.Use(Middleware.AUTH())
+		{
+			order.GET("/",nil)
+			order.POST("/",Controllers.CreatOrder)
+		}
+
+		loginfo:=v1.Group("/loginfo")
+		loginfo.Use(Middleware.AUTH())
+		{
+			loginfo.GET("/",Controllers.GetLogInfo)
+			loginfo.POST("/",Controllers.CreatLogInfo)
+		}
+
+
+		test:=v1.Group("/test")
+		test.Use(Middleware.AUTH())
+		{
+
+			test.POST("/", Controllers.TestApi)
+
 
 		}
 
@@ -83,8 +108,6 @@ func InitRouter() *gin.Engine {
 
 
 	}
-
-
 
 	return router
 

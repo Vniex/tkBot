@@ -1,9 +1,11 @@
-package Global
+package global
 
 import (
 	Mongo "tkBot/database/mongo"
-	"log"
 
+	log "github.com/sirupsen/logrus"
+	"os"
+	Config "tkBot/config"
 )
 
 
@@ -40,13 +42,10 @@ func NewRobotHubStatus(name string) *RobotHubStatus{
 }
 
 
-
-
-
 func InitGlobalVar(){
 	strategies,err:=Mongo.GetStrategyDB().FindStrategies()
 	if err!=nil{
-		log.Println(err)
+		log.Error(err)
 	}
 	for _,strategy:=range strategies{
 		Status[strategy.StrategyName]=NewRobotHubStatus(strategy.StrategyName)
@@ -62,4 +61,22 @@ func AddRobotHub(strategy *Mongo.Strategy){
 
 func DeleteRobotHub(strategy *Mongo.Strategy){
 	panic("not implement")
+}
+
+func InitLog(){
+	//MyLogger=logrus.New()
+	if Config.ProductionEnv == true {
+		log.SetFormatter(&log.JSONFormatter{})
+	} else {
+		// The TextFormatter is default, you don't actually have to do this.
+		log.SetFormatter(&log.TextFormatter{})
+	}
+	file, err := os.OpenFile(Config.LogFile, os.O_CREATE|os.O_WRONLY, 0666)
+	if err == nil {
+		log.SetOutput(file)
+	} else {
+		log.Info("Failed to log to file, using default stderr")
+	}
+
+	log.SetLevel(log.InfoLevel)
 }

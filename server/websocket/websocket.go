@@ -2,12 +2,13 @@ package websocket
 
 import (
 	"net/http"
-	"log"
+
 	"time"
 	"encoding/json"
 	"gopkg.in/mgo.v2/bson"
 
-	GlobalVar "tkBot/server/Global"
+	log "github.com/sirupsen/logrus"
+	GlobalVar "tkBot/global"
 	Mongo "tkBot/database/mongo"
 )
 
@@ -25,7 +26,7 @@ func processHeartBeat(msg *RobotHubMsg){
 	GlobalVar.Status[msg.RobotHubName].LastLogin=time.Now().Unix()
 	for _,robot :=range robots{
 		if GlobalVar.Status[msg.RobotHubName].Robot[robot]==nil{
-			log.Println("robot not in globalvar")
+			log.Error("robot not in globalvar")
 			return
 		}
 		GlobalVar.Status[msg.RobotHubName].Robot[robot].LastLogin=time.Now().Unix()
@@ -47,7 +48,7 @@ func processRegister(msg *RobotHubMsg){
 	}
 
 	if err:=Mongo.GetStrategyDB().Insert(strategy);err!=nil{
-		log.Println(err)
+		log.Error(err)
 	}
 	GlobalVar.AddRobotHub(strategy) //todo process error
 
@@ -60,12 +61,12 @@ func processPushData(msg *RobotHubMsg){
 		data:=msg.Data
 		var ann Mongo.Announcement
 		if err:=json.Unmarshal([]byte(data),&ann);err!=nil{
-			log.Println(err)
+			log.Error(err)
 			return
 		}
 
 		if err:=Mongo.GetAnnouncementDB().Insert(&ann);err!=nil{
-			log.Println(err)
+			log.Error(err)
 		}
 
 
@@ -98,10 +99,11 @@ func WsHandlerServer(resp http.ResponseWriter, req *http.Request) {
 	// 应答客户端告知升级连接为websocket
 	wsSocket, err := wsUpgrader.Upgrade(resp, req, nil)
 	if err != nil {
+		log.Error(err)
 		return
 	}
 	client_name:=req.URL.Query().Get("client_name")
-	log.Println(client_name)
+	log.Info(client_name)
 	wsConn:=NewWsConnection(client_name,wsSocket)
 	HubWsConn[wsConn.clientName]=wsConn
 

@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"time"
 	"reflect"
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 
@@ -47,7 +47,7 @@ func RE(retry int, method interface{}, params ...interface{}) interface{} {
 	var retryC int = 0
 _CALL:
 	if retryC > 0 {
-		log.Println("sleep....", time.Duration(retryC*500*int(time.Millisecond)))
+		log.Info("sleep....", time.Duration(retryC*500*int(time.Millisecond)))
 		time.Sleep(time.Duration(retryC * 500 * int(time.Millisecond)))
 	}
 
@@ -59,10 +59,10 @@ _CALL:
 				log.Println(vl)
 				retryC++
 				if retryC <= retry {
-					log.Printf("Invoke Method[%s] Error , Begin Retry Call [%d] ...", invokeM.String(), retryC)
+					log.Info("Invoke Method[%s] Error , Begin Retry Call [%d] ...", invokeM.String(), retryC)
 					goto _CALL
 				} else {
-					log.Println("Invoke Method Fail ???" + invokeM.String())
+					log.Error("Invoke Method Fail ???" + invokeM.String())
 					//panic("Invoke Method Fail ???" + invokeM.String())
 				}
 			}

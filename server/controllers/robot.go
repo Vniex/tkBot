@@ -4,11 +4,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	Mongo "tkBot/database/mongo"
-	GlobalVar "tkBot/server/Global"
+	GlobalVar "tkBot/global"
 
 	WebSocket "tkBot/server/websocket"
 	"encoding/json"
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 func CreateRobot(c *gin.Context){
@@ -30,7 +30,7 @@ func CreateRobot(c *gin.Context){
 			)
 
 			if err:=WebSocket.HubWsConn[strategy.StrategyName].WsWrite(msg);err!=nil{
-				log.Println(err)
+				log.Error(err)
 				c.JSON(http.StatusOK,gin.H{
 					"success":false,"message":err.Error(),
 				})
@@ -98,7 +98,7 @@ func StopRobot(c *gin.Context){
 			//)
 
 			if err:=WebSocket.HubWsConn[strategy.StrategyName].WsWrite(msg);err!=nil{
-				log.Println(err)
+				log.Error(err)
 				c.JSON(http.StatusOK,gin.H{
 					"success":false,"message":err.Error(),
 				})

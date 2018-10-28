@@ -3,10 +3,6 @@ package utils
 import (
 	"net/url"
 	"net/http"
-	"log"
-
-	Message "tkBot/server/websocket"
-	WebSocket "github.com/gorilla/websocket"
 
 )
 
@@ -19,29 +15,3 @@ func SendToWechat(SERVER_SCKEY,text,desp string) {
 	http.PostForm(wechatUrl,params)
 }
 
-
-type RobotDetect struct {
-	websocketServer string
-	wsConn *Message.WsConnection
-}
-
-
-func NewRobotDetect(websocketServer string) *RobotDetect{
-	conn, _, err := WebSocket.DefaultDialer.Dial(websocketServer, nil)
-	if err != nil {
-		log.Printf("Fail to dial: %v", err)
-		return nil
-	}
-
-	return &RobotDetect{websocketServer,Message.NewWsConnection("",conn)}
-}
-
-
-func (r *RobotDetect) Start(interval int,msg *Message.RobotHubMsg) {
-	go r.wsConn.Heartbeat(interval,msg)
-	go r.wsConn.ProcLoop(func(msg *Message.RobotHubMsg) {
-		log.Printf("client receive %v \n",msg)
-	})
-	go r.wsConn.WsReadLoop()
-	go r.wsConn.WsWriteLoop()
-}

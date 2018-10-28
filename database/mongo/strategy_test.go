@@ -11,7 +11,9 @@ func TestStrategyDB_Insert(t *testing.T) {
 	s:=&Strategy{
 		bson.NewObjectId(),
 		"annSipder",
-
+		"",
+		"",
+		"",
 		para,
 	}
 	db:=GetStrategyDB()
@@ -23,6 +25,7 @@ func TestStrategyDB_FindStrategies(t *testing.T) {
 	ss,_:=db.FindStrategies()
 	for _,s :=range ss{
 		t.Log(s.Id.Hex())
+		t.Log(s.Id.String())
 		t.Log(s.StrategyName)
 		t.Log(s.Para)
 	}

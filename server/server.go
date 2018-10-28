@@ -7,7 +7,7 @@ import (
 
 	Config "tkBot/config"
 	Routers "tkBot/server/routers"
-	"tkBot/server/Global"
+	"tkBot/global"
 )
 
 type HttpServer struct {
@@ -21,7 +21,7 @@ type HttpServer struct {
 
 
 func (h *HttpServer)Start(){
-	Global.InitGlobalVar()
+	global.InitGlobalVar()
 	router:=Routers.InitRouter()
 	h.server = &http.Server{
 		Addr:           ":"+Config.ServerPort,
